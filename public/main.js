@@ -63,9 +63,13 @@ $("#btn-publish").click(async function () {
   let post = await fetch(
     "https://graph.facebook.com/" +
       data.id +
-      "/feed?message=Hello Fans!&access_token=" +
-      data.access_token
+      "/feed?message=Hello Fans! &access_token=" +
+      data.access_token,
+    {
+      method: "POST",
+    }
   );
+
   let resp = await post.text();
   console.log(resp);
 });
