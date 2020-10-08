@@ -99,8 +99,41 @@ Para iniciar sesión nuestro usuario lo realizaremos de la siguiente manera, con
     });
 ```
 ### PUBLISH-Publicar en página de facebook
+Podemos publicar en una página utilizando fetch por medio del método POST
+```js 
+$("#btn-publish").click(async function () {
+  let access_token = localStorage.getItem("access_token");
+  let userId = localStorage.getItem("userId");
+  let response = await fetch(
+    "https://graph.facebook.com/" +
+      userId +
+      "/accounts?access_token=" +
+      access_token
+  );
+  let json = await response.text(); // read response body as text
+  let data = JSON.parse(json).data[0];
+  console.table(JSON.parse(json).data);
+  let path = "/" + data.id + "/feed";
+  console.log("id_page", data.id, data.access_token);
+  let method = "POST";
+  let data_publish = {
+    message: "hola a todos",
+    access_token: data.access_token,
+  };
 
+  let post = await fetch(
+    "https://graph.facebook.com/" +
+      data.id +
+      "/feed?message=Hello Fans! &access_token=" +
+      data.access_token,
+    {
+      method: "POST",
+    }
+  );
+  let resp = await post.text();
+});
 
+```
 
 
 
