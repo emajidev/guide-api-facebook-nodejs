@@ -9,13 +9,15 @@ pasos:
 ## 1.Configuración de facebook developers.
 
 Primero comenzaremos con la creación de una cuenta en facebook developer. Una vez realizado esto crearás una nueva app.
----
+
+![sample1](https://raw.githubusercontent.com/emajidev/alabanzaband/master/sample1.png)
+
 Luego nos dirigimos a configuración básica, en esta opción encontraremos id de la app, Nombre para mostrar, Correo electrónico de contacto, entre otros.
 observaremos en la casilla de "URL de la Política de privacidad" la cual nos permitirá establecer la conexión con nuestro servidor, siendo para este caso una comunicación por localhost.
-----
-No obstante nuestra conexión con la api de facebook dará error si la utilizamos. Esto se debe a que nuestro servidor necesita poseer un certificado SSL para la protección en la transferencia de datos.
-----
-Solucionaremos este problema creando los certificados muy fácilmente con Open SSL para ello ejecutamos lo siguiente:
+
+![sample2](https://raw.githubusercontent.com/emajidev/alabanzaband/master/sample2.png)
+
+No obstante nuestra conexión con la api de facebook dará error si la utilizamos. Esto se debe a que nuestro servidor necesita poseer un certificado SSL para la protección en la transferencia de datos. Solucionaremos este problema creando los certificados muy fácilmente con Open SSL para ello ejecutamos lo siguiente:
 
 `mkdir SSLcertication`
 
