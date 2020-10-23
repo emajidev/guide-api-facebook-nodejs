@@ -9,15 +9,40 @@
   <body>
     <h1>Api Facebook Conection</h1>
     <h2>Test Conection to publish data on facebook</h2>
+    <h3 id="status">offline</h3>
     <Button id="btn-login">Login</Button>
 
-    <Button id="btn-publish">publish</Button>
+    <Button id="btn-logout">cerrar</Button>
+    <Button id="btn-pages">Pages Facebook</Button>
+
+    <Button id="btn-publish-text-facebook">Publish text Facebook</Button>
+    <div>
+      <input
+        type="file"
+        id="select_photo"
+        name="photo"
+        accept="image/png, image/jpeg, video/mp4"
+      />
+      <Button id="btn-publish-photos-facebook">
+        Publish photos Facebook
+      </Button>
+      <Button id="btn-publish-videos-facebook">
+        Publish videos Facebook
+      </Button>
+    </div>
+
+    <Button id="btn-get-data-instagram">Publish Instagram</Button>
+
+    <Button id="btn-get-permissions">View Permission</Button>
     <h1 id="confirmMsg"></h1>
+    <div>
+      <ol id="#list"></ol>
+    </div>
     <script
       async
       defer
       src="https://connect.facebook.net/en_US/sdk.js"
     ></script>
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>

@@ -1,75 +1,92 @@
-window.fbAsyncInit = async function () {
-  try {
-    FB.init({
-      appId: "819263155488647",
-      autoLogAppEvents: true,
-      xfbml: true,
-      version: "v8.0",
-    });
-    await FB.AppEvents.logPageView();
-    console.log("llamando sdk facebook");
-  } catch (e) {
-    console.log(e);
-  }
-};
+import { login } from "./modules/Login.js";
+import { logout } from "./modules/Logout.js";
+import { useApiFacebook } from "./modules/UseApiFacebook.js";
+import { publishPhotos } from "./modules/PublishPhotos.js";
+// get page id
+async function page_id() {
+  let userId = localStorage.getItem("userId");
+  let access_token = localStorage.getItem("access_token");
+  let action = "/accounts?";
+  let method = "GET";
+  let json = await useApiFacebook(userId, access_token, action, method);
+  let pageID = await JSON.parse(json).data[0]; // this is a array whereby the users page is displayed
+  return pageID;
+}
+async function ig_id() {
+  let data = await page_id();
+  let pageId = data.id;
+  let pageToken = data.access_token;
+  let action = "?fields=instagram_business_account";
+  let method = "GET";
+  let igID = await useApiFacebook(pageId, pageToken, action, method);
+  return igID;
+}
 
-$("#btn-login").click(function () {
-  FB.login(function (response) {
-    if (response.authResponse) {
-      console.log("Bienvenido.... ");
-      FB.api("/me", function (response) {
-        console.log("un gusto, " + response.name + ".");
-        console.table(response);
-      });
-
-      FB.getLoginStatus(function (response) {
-        if (response.status === "connected") {
-          let accessToken = response.authResponse.accessToken;
-          let userId = response.authResponse.userID;
-          console.log(userId);
-          console.log(accessToken);
-          localStorage.setItem("userId", userId);
-          localStorage.setItem("access_token", accessToken);
-        }
-      });
-    } else {
-      console.log("User cancelled login or did not fully authorize.");
-    }
-  });
+$("#btn-login").click(() => {
+  login();
 });
 
-$("#btn-publish").click(async function () {
-  let access_token = localStorage.getItem("access_token");
+$("#btn-logout").click(() => {
+  logout();
+});
+
+$("#btn-pages").click(async () => {
+  let data = await page_id();
+  console.log(data);
+});
+
+///////////////////////// POST SECTION ///////////////////////////////
+// get user permissions
+$("#btn-get-permissions").click(async () => {
   let userId = localStorage.getItem("userId");
-  let response = await fetch(
-    "https://graph.facebook.com/" +
-      userId +
-      "/accounts?access_token=" +
-      access_token
-  );
+  let access_token = localStorage.getItem("access_token");
+  let action = "/permissions?";
+  let method = "GET";
+  let resp = await useApiFacebook(userId, access_token, action, method);
+  console.table(resp);
+});
 
-  let json = await response.text(); // read response body as text
+//Get the Instagram Business Account's Media
+$("#btn-get-data-instagram").click(async () => {
+  let dataPage = await page_id();
+  let igID = await ig_id();
+  let pageToken = dataPage.access_token;
+  let action = "/media?";
+  let method = "GET";
+  let resp = await useApiFacebook(igID, pageToken, action, method);
+  console.table(resp);
+});
 
-  let data = JSON.parse(json).data[0];
-  console.table(JSON.parse(json).data);
-  let path = "/" + data.id + "/feed";
-  console.log("id_page", data.id, data.access_token);
+///////////////////////// POST SECTION ///////////////////////////////
+
+// Facebook
+$("#btn-publish-text-facebook").click(async () => {
+  let data = await page_id();
+  let pageId = data.id;
+  let pageToken = data.access_token;
+  let action = "/feed?message= Aqui va escrito un mensaje";
   let method = "POST";
-  let data_publish = {
-    message: "hola a todos",
-    access_token: data.access_token,
-  };
+  let resp = await useApiFacebook(pageId, pageToken, action, method);
+  console.log(resp);
+});
 
-  let post = await fetch(
-    "https://graph.facebook.com/" +
-      data.id +
-      "/feed?message=Hello Fans! &access_token=" +
-      data.access_token,
-    {
-      method: "POST",
-    }
-  );
+$("#btn-publish-photos-facebook").click(async () => {
+  let data = await page_id();
+  let pageId = data.id;
+  let pageToken = data.access_token;
+  let msg = "publish photo";
+  publishPhotos(pageId, pageToken, msg);
+});
 
-  let resp = await post.text();
+$("#btn-publish-videos-facebook").click(() => {});
+
+//Instagram
+$("#btn-publish-comment-instagram").click(async () => {
+  let dataPage = await page_id();
+  let igID = await ig_id();
+  let pageToken = dataPage.access_token;
+  let action = "/feed?message= Aqui va escrito un mensaje";
+  let method = "POST";
+  let resp = await useApiFacebook(pageId, pageToken, action, method);
   console.log(resp);
 });
