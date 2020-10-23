@@ -73,33 +73,45 @@ Para utilizar la api la llamaremos de la siguiente manera desde nuestro main.js:
     }
   };
 ```
-## 3. Login de usuario y obtención de token
-Para iniciar sesión nuestro usuario lo realizaremos de la siguiente manera, con ellos obtendremos diversos datos dentro de un objecto tales como id de usuario, token, nombre de cuenta, correo electrónico entre otros. Es importante resaltar que podemos almacenar nuestro userID y access_token dentro de localStorage para posteriormente ser utilizados.
+## 3. Login de usuario y obtención de token de larga duracion
+Para iniciar sesión nuestro usuario lo realizaremos de la siguiente manera, con ellos obtendremos diversos datos dentro de un objecto tales como id de usuario, token, nombre de cuenta, correo electrónico entre otros, estos permisos son solicitados mediante el scope. Ademas Es importante resaltar que podemos almacenar nuestro userID y access_token dentro de localStorage para posteriormente ser utilizados.
 
 ```js
-  FB.login(function (response) {
+   FB.login(
+    function (response) {
+      // handle the response
       if (response.authResponse) {
-        console.log("Bienvenido.... ");
-        FB.api("/me", function (response) {
-          console.log("un gusto, " + response.name + ".");
-          console.table(response);
-        });
-   
-        FB.getLoginStatus(function (response) {
+        FB.api("/me", function (response) {});
+        FB.getLoginStatus(async (response) => {
           if (response.status === "connected") {
+            $("#status").html("Online!");
             let accessToken = response.authResponse.accessToken;
             let userId = response.authResponse.userID;
+
+            let longAccessToken = await fetch(
+              `https://graph.facebook.com/v8.0/oauth/access_token?grant_type=fb_exchange_token& client_id=${appId}& client_secret=${appSecret}&fb_exchange_token=${accessToken}`
+            );
+
+            let respLongAccessToken = await response.authResponse.accessToken;
+            console.log("long token", respLongAccessToken);
+
             localStorage.setItem("userId", userId);
-            localStorage.setItem("access_token", accessToken);
+            localStorage.setItem("access_token", respLongAccessToken);
           }
         });
       } else {
         console.log("User cancelled login or did not fully authorize.");
       }
+    },
+    {
+      scope: "pages_show_list,pages_manage_posts,pages_read_engagement",
+      return_scopes: true,
+    }
+  );
     });
 ```
 
-### ESCRIBIR-Publicar en página de facebook
+### ESCRIBIR-Publicar comentario en página de facebook
 Podemos publicar en una página utilizando fetch por medio del método POST
 ```js 
   let access_token = localStorage.getItem("access_token");
@@ -131,8 +143,31 @@ Podemos publicar en una página utilizando fetch por medio del método POST
   let resp = await post.text();
 
 ```
+### ESCRIBIR-Publicar fotos en página de facebook
+Podemos publicar fotos en una página utilizando un objecto Blob y enviado por el metodo fetch por medio del método POST
 
+```js
+pageAccessToken, msg) {
+  let url = "../images/logo.png";
+  let resp = await fetch(url);
+  let photoData = await resp.blob(); //return blob object
 
+  const formData = new FormData(); // build a new format to send in body of fetch
+
+  formData.append("access_token", pageAccessToken);
+  formData.append("source", photoData);
+  formData.append("message", msg);
+
+  let response = await fetch(`https://graph.facebook.com/${pageId}/photos`, {
+    body: formData,
+    method: "post",
+  });
+
+  response = await response.json();
+
+  console.log(response);
+
+```
 
 
 
