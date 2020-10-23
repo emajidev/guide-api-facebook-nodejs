@@ -10,9 +10,12 @@
   "author": "Emanuel Jimenez",
   "license": "MIT",
   "dependencies": {
+    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
+    "instagram-web-api": "^2.2.2",
+    "path": "^0.12.7",
     "serve-favicon": "^2.5.0"
   }
 }

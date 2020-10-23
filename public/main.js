@@ -21,6 +21,11 @@ async function ig_id() {
   let igID = await useApiFacebook(pageId, pageToken, action, method);
   return igID;
 }
+async function peticion_server(path) {
+  let resp = await fetch(path);
+  let response = await resp.text();
+  console.log(response);
+}
 
 $("#btn-login").click(() => {
   login();
@@ -35,8 +40,6 @@ $("#btn-pages").click(async () => {
   console.log(data);
 });
 
-///////////////////////// POST SECTION ///////////////////////////////
-// get user permissions
 $("#btn-get-permissions").click(async () => {
   let userId = localStorage.getItem("userId");
   let access_token = localStorage.getItem("access_token");
@@ -46,17 +49,7 @@ $("#btn-get-permissions").click(async () => {
   console.table(resp);
 });
 
-//Get the Instagram Business Account's Media
-$("#btn-get-data-instagram").click(async () => {
-  let dataPage = await page_id();
-  let igID = await ig_id();
-  let pageToken = dataPage.access_token;
-  let action = "/media?";
-  let method = "GET";
-  let resp = await useApiFacebook(igID, pageToken, action, method);
-  console.table(resp);
-});
-
+///////////////////////// FACEBOOK     //////////////////
 ///////////////////////// POST SECTION ///////////////////////////////
 
 // Facebook
@@ -80,13 +73,47 @@ $("#btn-publish-photos-facebook").click(async () => {
 
 $("#btn-publish-videos-facebook").click(() => {});
 
-//Instagram
-$("#btn-publish-comment-instagram").click(async () => {
-  let dataPage = await page_id();
-  let igID = await ig_id();
-  let pageToken = dataPage.access_token;
-  let action = "/feed?message= Aqui va escrito un mensaje";
-  let method = "POST";
-  let resp = await useApiFacebook(pageId, pageToken, action, method);
-  console.log(resp);
+/////////////////////////// INSTAGRAM    ////////////////
+/////////////////////////// LOGIN SECTION ///////////////
+function template(data) {
+  return `
+    <div>
+      <h1>${data.header}</h1>
+      <p>${data.subheader}</p>
+      <div id="progressBarOuter">
+        <input id="username" placeholder="Usuario" ></input>
+        <h>
+        <input id="password" placeholder="Constraseña"></input>
+      </div>
+      <Button type="submit" >Entrar</Button>
+    </div>
+  `;
+}
+
+$("#btn-login-instagram").click(async () => {
+  let newWindow = window.open(
+    "",
+    "Instagram",
+    "height=670,width=512,left=512,location=yes,menubar=no,resizable=no,scrollbars=yes,status=no,titlebar=yes,top=0"
+  );
+  let temp = template({ header: "INSTAGRAM", subheader: "Inicio de sesion" });
+  newWindow.document.write(temp);
+
+  var url = "test";
+  var data = { username: "example" };
+
+  fetch("test", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  //peticion_server("login_instagram");
+});
+
+/////////////////////////// POST SECTION ////////////////
+$("#btn-publish-ig-photo").click(async () => {
+  peticion_server("upload_ig_photo");
 });
